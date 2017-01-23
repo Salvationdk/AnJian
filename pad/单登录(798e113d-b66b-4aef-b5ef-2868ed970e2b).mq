@@ -1,0 +1,134 @@
+//通过找色确认游戏画面
+Dim intX,intY,t1,t2,t3,t4,n
+Dim 同意(),确认(),开始(),OK1(),OK2(),OK3(),受信(),消除邮件(),确认消除(),OK4
+Dim 番号(),没魔法石(),登录失败()
+Dim i,a,b,c,时间1
+Dim 游戏路径="/data/data/jp.gungho.padHT/files/data048.bin"
+Dim 文件路径
+
+a = int(ReadUIConfig("编号"))
+
+同意 = Array(367, 922, "F6F7F9","22|27|DADEE1,131|19|3F4950,130|17|E4E5E6,-246|-671|1E756B,-184|-636|FAFCFB,381|-670|54A49D","同意")
+确认 = Array(246, 698, "8A8E93", "-28|-10|D6DEE6,-75|-24|5F8DC2,392|-133|557A7B,-165|-132|5CACA5,-168|-137|061513","确认")
+开始 = Array(376, 907, "1F2615", "29|175|494D4B,327|-9|86BC6F,328|121|892C71","开始")
+OK1 = Array(361,934, "767B80","14|-8|BAC6D4,-293|67|6BA49E,156|-811|854BFA","OK1")
+OK2 = Array(362,887, "E0E5EB","60|29|151F29,182|-762|6F42FA,176|-707|80CDE6","OK2")
+OK3 = Array(364, 744, "0E1720", "9|16|D2DCE6,175|-618|7E45FB,167|-556|6ABCD3,-274|-215|75BFB9","ok3")
+OK4 = Array(355, 799, "2E3E51","-74|27|3C5E84,-213|-102|38E1DF,158|-678|8724FE,149|-623|A5E8FD","OK4")
+受信 = Array(608,390, "32384D","-146|-61|9D01C7,-155|-51|41FF0C,-146|-57|ED1027,-472|18|000000","受信")
+消除邮件 = Array(164, 847, "4040F0", "-37|23|4048D9,26|4|3C3DE1,331|-714|FEE5FD,332|-701|3AF225,319|-693|0B51FE","消除邮件")
+确认消除 = Array(250, 776, "80858A", "-24|24|FFFFFF,-74|21|3C5E84,304|8|3E658D,339|13|185649,264|-651|4E48CA,248|-585|4291A9","确认消除")
+番号 = Array(361, 845, "CED6E0", "62|29|141D28,-268|75|174D41,-110|-237|1A2725,-108|-235|7EBDB6,-100|-234|1A2625,-87|-232|0B100F", "番号")
+没魔法石 = Array(355, 799, "2E3E51","231|-410|A4A7AC,-226|-467|000000,-215|-379|E63CE3,153|-682|4E48CA,140|-657|0379FB", "没魔法石")
+登录失败= Array(352, 749,"283A4C","-65|-14|DEE4EA,85|-25|385A7F,72|19|3A5A7B,275|59|184F42,276|67|121820,31|16|121C28,-14|-17|A0B1C4,-49|5|FFFFFF", "登录失败")
+
+KeepScreen True
+
+KillApp "jp.gungho.padHT"
+Delay 500
+文件路径 = "/sdcard/B/" & a & "/data048.bin"
+Dir.Copy 文件路径, 游戏路径
+Call 登陆游戏()
+
+
+Sub 登陆游戏()
+    RunApp "jp.gungho.padHT"
+    Delay 2000
+    t1 = Time()
+    n = 0
+    Do
+        KeepCapture 
+    
+        If 判断(同意) = True Then 
+            Call 点击(同意)
+            //        delay 1000
+            Call 点击(确认)
+        ElseIf 判断(开始) = True Then
+            Call 点击(开始)
+            //        Delay 3000
+        ElseIf 判断(OK1) = True Then
+            Call 点击(OK1)
+            //        delay 1000
+        ElseIf 判断(OK2) = True Then
+            Call 点击(OK2)
+            //        Delay 1000
+        ElseIf 判断(OK3) = True Then
+            Call 点击(OK3)
+            Exit Do
+            //        Delay 1000 
+            //        ElseIf 判断(受信) = True Then
+            //            //            Call 点击(受信)
+            //            Touch intX,intY,500
+            //            Delay 500
+            //            n = n + 1
+            //            If n > 3 Then 
+            //                TracePrint " 无法领取魔法石"
+            //                KillApp "jp.gungho.padHT"
+            //                Exit Do
+            //            End If
+            //            
+            //        ElseIf 判断(消除邮件) = True Then
+            //            Call 点击(消除邮件)
+            //            Delay 500
+            //        ElseIf 判断(确认消除) = True Then
+            //            Call 点击(确认消除)
+            //            Delay 2000
+            //            TracePrint " 成功领取魔法石"
+            //            KillApp "jp.gungho.padHT"
+            //            Exit Do
+            //        ElseIf 判断(OK4) = True or 判断(没魔法石)=True  Then
+            //            Delay 500
+            //            TracePrint " 没魔法石或邮件,准备换号"
+            //            KillApp "jp.gungho.padHT"
+            //            Exit Do  
+                    ElseIf 判断(番号) = True Then
+                        Call 点击(番号)
+                        Delay 500
+                    ElseIf 判断(登录失败) = True Then
+                        Call 点击(登录失败)
+                        Delay 500
+        End If
+    
+        ReleaseCapture 
+    
+//        Delay 1000
+//        t2 = Time()
+//        If t2 - t1 > 140 Then 
+//            TracePrint "登录超时 退出游戏"
+//            KillApp "jp.gungho.padHT"
+//            Exit Do
+//        End If
+    Loop
+
+    ReleaseCapture 
+End Sub
+
+Function 判断(数组特征)
+
+    Dim arr()
+
+    arr = 数组特征
+    
+    FindMultiColor 0, 0, 0, 0, arr(2), arr(3), 1, 0.9, intX, intY
+    
+    If intX > -1 And intY > -1 Then 
+    
+        //        TracePrint "找到画面:"&arr(4)
+ 
+        判断 = True
+        
+    End If
+
+End Function
+
+Sub 点击(数组坐标)
+
+    Dim arr()
+
+    arr=数组坐标
+
+    Touch arr(0), arr(1), 500
+    
+    Delay 1000
+
+End Sub

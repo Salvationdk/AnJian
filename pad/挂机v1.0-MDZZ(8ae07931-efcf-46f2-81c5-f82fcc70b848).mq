@@ -1,0 +1,704 @@
+/*
+12月5日更新:
+	1.图片名称	
+*/
+
+
+Dim intX,intY,n,开始时间,结束时间
+Dim 坐标(),清1(),入口
+Dim D5,D6木,D6暗,D6光,D6火,D6水,天空龙
+
+D5 = ReadUIConfig("D5")
+D6木 = ReadUIConfig("D6木")
+D6暗 = ReadUIConfig("D6暗")
+D6光 = ReadUIConfig("D6光")
+D6火 = ReadUIConfig("D6火")
+D6水 = ReadUIConfig("D6水")
+天空龙 = ReadUIConfig("天空龙")
+
+
+坐标 = Array(intX, intY)
+入口 = Array(64, 1218)
+n = 0
+KeepScreen True
+SetControlBarPos 0.2
+
+//Call 找图点击("普通副本2")
+
+//Log.open
+Do
+    开始时间=Time()
+    If 找图("桌面") Then 
+        Call 登录()
+    End If
+    Call 战斗()
+    结束时间 = Time()
+    n=n+1
+    TracePrint  Now()&"第"&n&"次完成副本,本次花费时间="&(结束时间-开始时间)
+Loop
+
+
+Function 找图(图片名)
+    //  KeepCapture
+    FindPic 0,0,0,0,"Attachment:"&图片名&".png","000000",0,0.8,intX,intY
+    If intX > -1 And intY > -1 Then 
+        找图 = True
+    End If
+    //   ReleaseCapture
+End Function
+
+Sub 点击(数组坐标)
+    Dim arr()
+    arr = 数组坐标
+    Delay 1000
+    TouchDownEvent arr(0), arr(1),0
+    TouchMoveEvent arr(0)-1, arr(1),0,23
+    Delay 95
+    TouchUpEvent 0
+End Sub
+
+
+Sub 找图点击(图片名)
+    If 找图(图片名) Then 
+       // TracePrint "找到"&图片名
+        Delay 1000
+        TouchDownEvent intX,intY,0
+        TouchMoveEvent intX-1,intY,0,23
+        Delay 95
+        TouchUpEvent 0
+    End If
+End Sub
+
+Sub 清BOX(aa, bb)
+    Delay 200
+    TouchDownEvent aa,bb,0
+    TouchMoveEvent aa-1,bb,0,23
+    Delay 95
+    TouchUpEvent 0
+End Sub
+
+
+Sub 卖垃圾()
+    Dim x,y,清1()
+    清1 = Array(579, 1076)
+    Delay 1000
+    TouchDown 682,1016 , 2
+    TouchMove 682 , 1067, 2
+    TouchUp 2
+    For 3
+        For x = 65 To 589 Step 131
+            For y = 360 To 916 Step 139
+                Call 清BOX(x,y)	
+            Next
+        Next
+        Call 点击(清1)
+        For 10
+            Call 找图点击("却2")
+        Next
+        KeepCapture
+        If CmpColorEx("56|539|434C53,51|549|384147,90|544|3E464B,74|553|343B40",0.9) = 1 Then
+            TouchDown 332,314, 2
+            TouchMove 330,1009, 2,1600
+            TouchUp 2
+        End If
+        ReleaseCapture
+    Next
+    delay 1000
+    call 点击(入口)
+End Sub
+
+
+Sub 登录()
+    Dim t1,t2,登录列表()    
+    t1=Time()
+    登录列表 = Array("同意", "规则确认", "开始", "公告OK", "每日登录OK", "助人OK", "错误","错误1","错误2", "104")
+    KillApp "jp.gungho.padHT"
+    Delay 500
+    RunApp "jp.gungho.padHT"
+    Delay 1000
+    Do
+        t2=Time()
+        If t2 - t1 > 300 Then 
+            TracePrint "登录超时"
+            Exit Sub
+        End If
+        If 找图("邮件列表") Then 
+            Exit Sub
+        Else 
+            For Each i In 登录列表
+                Call 找图点击(i)
+            Next
+        End If
+    Loop
+End Sub
+
+Sub 领石()
+
+    For 3
+        If 找图("魔法石") Then 
+            TracePrint "找到魔法石"
+            TouchDownEvent intX+150,intY+50,0
+            TouchMoveEvent intX+149,intY+50,0,23
+            Delay 95
+            TouchUpEvent 0
+            Do
+                Call 找图点击("消除")
+                Delay 500
+                If 找图("消除确认") Then 
+                    Call 找图点击("消除确认")
+                    Exit Do	
+                End If
+            Loop
+        End If
+        Delay 500
+    Next
+End Sub
+    
+
+Sub 战斗()
+    Dim 入口(),t3,t4,关1(),关2(),关3(),关4(),关5(),战斗列表(),关卡()
+    战斗列表 = Array("错误","错误1", "队友", "选择","挑战", "公告OK", "战斗","报酬", "错误2", "副本公告OK")
+
+    入口 = Array(64, 1218)
+    关1 = Array(389, 885)
+    关2 = Array(420,759)
+    关3 = Array(379,622)
+    关4 = Array(382,497)
+    关5 = Array(394, 374)
+    关卡=关3
+    //    Delay 3000
+    Call 点击(入口)
+    t3=Time()
+    Do
+        If 找图("普通副本2") Then 
+            Call 找图点击("普通副本2")
+            Delay 1000
+            If D5 Then 
+                Touch 682,450,1500  	
+            End If
+            If D6木 Then 
+                Touch 682,550,1500  	
+            End If
+            If D6暗 Then 
+                Touch 682,500,1500  	
+            End If
+            If D6光 Then 
+                Touch 682,530,1500  	
+            End If
+            If D6火 Then 
+                Touch 682,580,1500  	
+            End If
+            If D6水 Then 
+                Touch 682,560,1500  	
+            End If
+            If 天空龙 Then 
+                Touch 682,450,1500  	
+            End If
+        End If
+        //        Call 找图点击("公告OK")
+        For Each j In 战斗列表
+            Call 找图点击(j)
+        Next        
+        If 找图("却") Then 
+            TracePrint "box满了"
+            Call 找图点击("却")
+            Call 卖垃圾()
+            Delay 300
+            Call 点击(入口)
+            Exit Sub
+        End If       
+        //进本选关
+        If 找图("经验") Then 
+            Call 找图点击("经验")
+            Delay 1500
+            If D6木 or D6暗 or D6光 or D6火 or D6水 Then 
+                关卡=关5
+            End If
+            If D5 Then 
+                关卡=关3
+            End If
+            If 天空龙 Then 
+                关卡=关1
+            End If
+            Call 点击(关卡)            
+        End If 
+
+        If 找图("邮件列表") Then 
+            Call 点击(入口)    
+        End If
+        
+        If 找图("钱箱") Then 
+            TracePrint "找到钱箱"
+            Call 转珠()
+            Exit Sub
+        End If
+       
+
+        If 找图("疾") Then 
+            TracePrint "没体力了休息会"
+            Delay 60000 * 5
+            Call 找图点击("疾")
+        End If
+
+        //        Call 找图点击("错误")      
+        //        Call 找图点击("队友")
+        //        Call 找图点击("选择")
+        //        Call 找图点击("挑战")
+        //        Call 找图点击("报酬")
+        t4 = Time()
+        If t4 - t3 > 1000 Then 
+            TracePrint "超时退出"
+            KillApp "jp.gungho.padHT"
+            KeyPress "Home"
+            Exit Sub
+        End If
+        If 找图("桌面") Then 
+            TracePrint "桌面"
+            Exit Sub
+        End If
+    Loop
+    
+End Sub
+
+Sub 换号()
+
+    Dim 游戏路径="/data/data/jp.gungho.padHT/files/data048.bin"
+    Dim 文件路径,i,a,b
+    a = int(ReadUIConfig("起始"))
+    b = Int(ReadUIConfig("结束")) 
+
+    
+    For i = a To b
+        KillApp "jp.gungho.padHT"
+        Delay 500
+        文件路径 = "/sdcard/B/" & i & "/data048.bin"
+        Dir.Copy 文件路径, 游戏路径
+        ShowMessage "正在登陆B组第"&i&"个账号" , 3000,350,350
+        TracePrint " 正在登录B组,第"&i&"个账号..."
+        Call 登录()
+        Call 领石()
+        delay 1000
+        //Call 战斗()
+    Next
+End Sub
+
+Sub 转珠()
+
+    Dim xy1,xy2,xy3,jl,xqd,yqd,xzd,yzd,xxd,t5,t6,t7,t8
+    Dim 技1(),技2(),技3(),技4(),技5(),BOSS1,BOSS2,BOSS3
+    
+    技1 = Array(58,583)
+    技2 = Array(179, 591)
+    技3 = Array(301,592)
+    技4 = Array(418,592)
+    技5 = Array(536, 585)
+    //    xqd = 64
+    //    yqd = 719
+    //    xzd = 654
+    //    yzd = 1191
+    //    jl = 118
+    xqd = 65
+    yqd = 741
+    xzd = 653
+    yzd = 1296
+    jl = 98
+    xxd = 30
+ 
+    t5 = Time()
+    
+    If D6木 Then 
+        BOSS1 = "水龙2"
+        BOSS2 = "木龙1"
+        BOSS3 = "木龙3"
+    End If
+    If D6暗 Then 
+        BOSS1 = "光龙1"
+        BOSS2 = "暗龙2"
+        BOSS3 = "暗龙3"
+    End If
+    If D6光 Then 
+        BOSS1 = "暗龙1"
+        BOSS2 = "光龙2"
+        BOSS3 = "光龙3"
+    End If
+    If D6火 Then 
+        BOSS1 = "大花龙"
+        BOSS2 = "炎龙"
+        BOSS3 = "火山龙"
+    End If
+    If D6水 Then 
+        BOSS1 = "爆炎龙"
+        BOSS2 = "水龙"
+        BOSS3 = "水晶极光龙"
+    End If
+    If 天空龙 Then 
+        BOSS1 = "龙1"
+        BOSS2 = "龙2"
+        BOSS3 = "龙5"
+    End If
+    /*
+    D6  木 水龙2,木龙1,木龙3
+    	暗 光龙1, 暗龙2, 暗龙3
+    	光 暗龙1, 光龙2, 光龙3
+    	火 大花龙, 炎龙, 火山龙
+    	水 爆炎龙,水龙,水晶极光龙
+    */
+    
+    
+    Do
+        Call 找图点击("不续关")
+        Call 找图点击("放弃")
+        If 找图("公告OK") Then 
+            Call 找图点击("公告OK")
+            Delay 1000
+            Exit Do
+        End If
+        If 找图(BOSS1) Then 
+            Delay 1000
+            Call 点击(技4)
+            Delay 500	
+        End If
+        If 找图(BOSS2) Then 
+            Delay 1000
+            Call 点击(技1)
+            Delay 500	
+        End If
+        If 找图(BOSS3) Then 
+            Delay 1000
+            Call 点击(技2)
+            Delay 500	
+        End If
+        
+        KeepCapture 
+        Delay 500
+        FindColor 13,694,702,1279,"6361FE",0,0.9,intX,intY
+        If intX > -1 And intY > -1 Then 
+            //            TracePrint "可以转珠"
+            For yy = yqd To yzd Step jl
+                KeepCapture 
+                For xx = xqd To xzd Step jl
+                    xy1 = GetPixelColor(xx, yy)
+                    t6 = Time()
+                    If t6 - t5 > 210 Then 
+                        TouchDown xqd, yqd, 2
+                        TouchMove xqd + jl, yqd, 2
+                        TouchMove xqd + jl, yzd, 2
+                        TouchMove xqd + jl * 3, yqd, 2
+                        TouchMove xzd, yzd, 2
+                        TouchUp 2 
+                        t5 = Time()
+                        Goto bj
+                    End If
+                    If xx + jl * 2 <= xzd and yy + jl <= yzd Then 
+                        //右和右右下
+                        xy2 = GetPixelColor(xx + jl, yy)
+                        xy3 = GetPixelColor(xx + jl * 2, yy + jl)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx + jl * 2, yy, 2
+                            TouchMove xx + jl * 2, yy + jl, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    If xx + jl * 2 <= xzd and yy - jl >= yqd Then 
+                        //右和右右上
+                        xy2 = GetPixelColor(xx + jl, yy)
+                        xy3 = GetPixelColor(xx + jl * 2, yy - jl)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx + jl * 2, yy, 2
+                            TouchMove xx + jl * 2, yy - jl, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    If xx + jl * 3 <= xzd Then 
+                        //右和右空右
+                        xy2 = GetPixelColor(xx + jl, yy)
+                        xy3 = GetPixelColor(xx + jl * 3, yy)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx + jl * 2, yy, 2
+                            TouchMove xx + jl * 3, yy, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    If xx + jl * 3 <= xzd Then 
+                        //空右和空空右
+                        xy2 = GetPixelColor(xx + jl * 2, yy)
+                        xy3 = GetPixelColor(xx + jl * 3, yy)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx, yy, 2
+                            TouchMove xx + jl, yy, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    If xx + jl <= xzd and yy + jl * 2 <= yzd Then 
+                        //下和下下右
+                        xy2 = GetPixelColor(xx, yy + jl)
+                        xy3 = GetPixelColor(xx + jl, yy + jl * 2)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx, yy + jl * 2, 2
+                            TouchMove xx + jl, yy + jl * 2, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    If xx - jl >= xqd and yy + jl * 2 <= yzd Then 
+                        //下和下下左
+                        xy2 = GetPixelColor(xx, yy + jl)
+                        xy3 = GetPixelColor(xx - jl, yy + jl * 2)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx, yy + jl * 2, 2
+                            TouchMove xx - jl, yy + jl * 2, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    If yy + jl * 3 <= yzd Then 
+                        //下和下空下
+                        xy2 = GetPixelColor(xx, yy + jl)
+                        xy3 = GetPixelColor(xx, yy + jl * 3)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx, yy + jl * 2, 2
+                            TouchMove xx, yy + jl * 3, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    If xx - jl >= xqd and yy + jl * 2 <= yzd Then 
+                        //下左和下空下
+                        xy2 = GetPixelColor(xx, yy + jl * 2)
+                        xy3 = GetPixelColor(xx - jl, yy + jl)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx, yy + jl, 2
+                            TouchMove xx - jl, yy + jl, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    If xx + jl <= xzd and yy + jl * 2 <= yzd Then 
+                        //下右和下空下
+                        xy2 = GetPixelColor(xx, yy + jl * 2)
+                        xy3 = GetPixelColor(xx + jl, yy + jl)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx+jl, yy+jl, 2
+                            TouchMove xx, yy+jl, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    If yy + jl * 3 <= yzd Then 
+                        //空下和空空下
+                        xy2 = GetPixelColor(xx, yy + jl * 2)
+                        xy3 = GetPixelColor(xx, yy + jl * 3)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx, yy, 2
+                            TouchMove xx, yy + jl, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    If xx + jl * 2 <= xzd and yy - jl >= yqd Then 
+                        //空右和右上
+                        xy2 = GetPixelColor(xx + jl * 2, yy)
+                        xy3 = GetPixelColor(xx + jl, yy - jl)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx + jl, yy, 2
+                            TouchMove xx + jl, yy - jl, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    If xx + jl * 2 <= xzd and yy - jl >= yqd Then 
+                        //上右和上右右
+                        xy2 = GetPixelColor(xx + jl, yy - jl)
+                        xy3 = GetPixelColor(xx + jl * 2, yy - jl)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx, yy, 2
+                            TouchMove xx, yy - jl, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    If xx + jl * 2 <= xzd and yy + jl <= yzd Then 
+                        //空右和右下
+                        xy2 = GetPixelColor(xx + jl * 2, yy)
+                        xy3 = GetPixelColor(xx + jl, yy + jl)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx + jl, yy, 2
+                            TouchMove xx + jl, yy + jl, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    If xx + jl * 2 <= xzd and yy + jl <= yzd Then 
+                        //下右和下右右
+                        xy2 = GetPixelColor(xx + jl, yy + jl)
+                        xy3 = GetPixelColor(xx + jl * 2, yy + jl)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx, yy, 2
+                            TouchMove xx, yy + jl, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    If xx + jl <= xzd and yy + jl * 2 <= yzd Then 
+                        //右下和右下下
+                        xy2 = GetPixelColor(xx + jl, yy + jl)
+                        xy3 = GetPixelColor(xx + jl, yy + jl * 2)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx, yy, 2
+                            TouchMove xx + jl, yy, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                
+                    If xx + jl * 2 <= xzd and yy + jl*2 <= yzd Then 
+                        //5 6 21-7
+                        xy2 = GetPixelColor(xx + jl, yy)
+                        xy3 = GetPixelColor(xx + jl * 2, yy + jl)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx + jl * 2, yy+jl*2, 2
+                            TouchMove xx + jl * 2, yy, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    If xx + jl * 2 <= xzd and yy + jl*3 <= yzd Then 
+                        //5 6 28-7
+                        xy2 = GetPixelColor(xx + jl, yy)
+                        xy3 = GetPixelColor(xx + jl * 2, yy + jl)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx + jl * 2, yy+jl*3, 2
+                            TouchMove xx + jl * 2, yy, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    If xx + jl * 2 <= xzd and yy + jl*4 <= yzd Then 
+                        //5 6 35-7
+                        xy2 = GetPixelColor(xx + jl, yy)
+                        xy3 = GetPixelColor(xx + jl * 2, yy + jl)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx + jl * 2, yy+jl*4, 2
+                            TouchMove xx + jl * 2, yy, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+
+                    If xx + jl * 2 <= xzd and yy + jl*5 <= yzd Then 
+                        //5 6 42-7
+                        xy2 = GetPixelColor(xx + jl, yy)
+                        xy3 = GetPixelColor(xx + jl * 2, yy + jl)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx + jl * 2, yy+jl*5, 2
+                            TouchMove xx + jl * 2, yy, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                
+                
+                    If xx+jl <= xzd Then 
+                        xy2 = GetPixelColor(xx,yy+jl*2)
+                        xy3 = GetPixelColor(xx+jl,yy+jl*2)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx,yy+jl, 2
+                            TouchMove xx, yy + jl * 2, 2
+                            TouchMove xx+jl,yy+jl*2, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+
+                    If xx+jl <= xzd Then 
+                        xy2 = GetPixelColor(xx+jl*2,yy)
+                        xy3 = GetPixelColor(xx+jl*2,yy+jl)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx+jl,yy, 2
+                            TouchMove xx+jl*2,yy, 2
+                            TouchMove xx+jl*2,yy+jl, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+
+                    If xx+jl<= xzd Then 
+                        xy2 = GetPixelColor(xx+jl*2,yy)
+                        xy3 = GetPixelColor(xx,yy+jl)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx+jl,yy, 2
+                            TouchMove xx,yy, 2
+                            TouchMove xx,yy+jl, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+
+                    If yy-jl>= yqd Then 
+                        xy2 = GetPixelColor(xx+jl,yy+jl)
+                        xy3 = GetPixelColor(xx,yy+jl)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx,yy-jl, 2
+                            TouchMove xx,yy+jl, 2
+                            TouchMove xx+jl,yy+jl, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    If yy+2*jl<= yqd Then 
+                        xy2 = GetPixelColor(xx-jl,yy+jl)
+                        xy3 = GetPixelColor(xx,yy+jl)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx,yy-jl, 2
+                            TouchMove xx,yy+jl, 2
+                            TouchMove xx-jl,yy+jl, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                
+                    If xx - jl >= xqd and yy + jl * 2 <= yzd Then 
+                        //左下和左下下
+                        xy2 = GetPixelColor(xx - jl, yy + jl)
+                        xy3 = GetPixelColor(xx - jl, yy + jl * 2)
+                        If ColorDiff(xy1, xy2) <= xxd and ColorDiff(xy1, xy3) <= xxd Then 
+                            TouchDown xx, yy, 2
+                            TouchMove xx - jl, yy, 2
+                            TouchUp 2
+                            Goto bj
+                        End If
+                    End If
+                    t7 = Time()
+                    If t7 - t5 > 500 Then 
+                        KillApp "jp.gungho.padHT"
+                        KeyPress "Home"
+                        Exit Sub
+                    End If
+                    If 找图("桌面") Then 
+                        TracePrint "游戏关闭"
+                        KillApp "jp.gungho.padHT"
+                        KeyPress "Home"
+                        Exit Sub	
+                    End If
+                Next
+                ReleaseCapture 
+                Delay 30
+            Next
+        Else 
+            Delay 500
+        End If
+        Rem bj
+        Delay 30
+        ReleaseCapture 
+    Loop
+    ReleaseCapture 
+    Delay 30
+
+    t8 = Time()
+    TracePrint "副本时间="&t8-t5&"秒"
+
+End Sub
